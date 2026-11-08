@@ -202,10 +202,7 @@ class SendTab extends StatelessWidget {
             if (vm.nearbyDevices.isEmpty)
               const Padding(
                 padding: EdgeInsets.only(bottom: 10, left: _horizontalPadding, right: _horizontalPadding),
-                child: Opacity(
-                  opacity: 0.3,
-                  child: DevicePlaceholderListTile(),
-                ),
+                child: DevicePlaceholderListTile(),
               ),
             ...vm.nearbyDevices.map((device) {
               final favoriteEntry = vm.favoriteDevices.findDevice(device);
@@ -240,31 +237,34 @@ class SendTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
-              child: Consumer(
-                builder: (context, ref) {
-                  final animations = ref.watch(animationProvider);
-                  return OpacitySlideshow(
-                    durationMillis: 6000,
-                    running: animations,
-                    children: [
-                      Text(
-                        t.sendTab.help,
-                        style: const TextStyle(color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                      if (checkPlatformCanReceiveShareIntent())
-                        Text(
-                          t.sendTab.shareIntentInfo,
-                          style: const TextStyle(color: Colors.grey),
-                          textAlign: TextAlign.center,
-                        ),
-                    ],
-                  );
-                },
+            // the placeholder above already shows the help text while the list is empty
+            if (vm.nearbyDevices.isNotEmpty || checkPlatformCanReceiveShareIntent())
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
+                child: Consumer(
+                  builder: (context, ref) {
+                    final animations = ref.watch(animationProvider);
+                    return OpacitySlideshow(
+                      durationMillis: 6000,
+                      running: animations,
+                      children: [
+                        if (vm.nearbyDevices.isNotEmpty)
+                          Text(
+                            t.sendTab.help,
+                            style: const TextStyle(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                        if (checkPlatformCanReceiveShareIntent())
+                          Text(
+                            t.sendTab.shareIntentInfo,
+                            style: const TextStyle(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
             const SizedBox(height: 50),
           ],
         );

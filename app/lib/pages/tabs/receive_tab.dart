@@ -16,6 +16,7 @@ import 'package:localsend_app/widget/custom_icon_button.dart';
 import 'package:localsend_app/widget/local_send_logo.dart';
 import 'package:localsend_app/widget/responsive_list_view.dart';
 import 'package:localsend_app/widget/rotating_widget.dart';
+import 'package:localsend_app/widget/status_pill.dart';
 import 'package:localsend_isolates/util/sleep.dart';
 import 'package:refena_flutter/addons.dart';
 import 'package:refena_flutter/refena_flutter.dart';
@@ -88,15 +89,24 @@ class _ReceiveTabState extends State<ReceiveTab> {
                         ),
                         FittedBox(
                           fit: BoxFit.scaleDown,
-                          child: Text(serverState?.alias ?? alias, style: const TextStyle(fontSize: 48)),
+                          child: Text(serverState?.alias ?? alias, style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w500)),
                         ),
+                        const SizedBox(height: 10),
                         InitialFadeTransition(
                           duration: const Duration(milliseconds: 300),
                           delay: const Duration(milliseconds: 500),
-                          child: Text(
-                            serverState == null ? t.general.offline : localIps.map((ip) => '#${ip.visualId}').toSet().join(' '),
-                            style: const TextStyle(fontSize: 24),
-                            textAlign: TextAlign.center,
+                          child: Column(
+                            children: [
+                              StatusPill(online: serverState != null),
+                              if (serverState != null && localIps.isNotEmpty) ...[
+                                const SizedBox(height: 10),
+                                Text(
+                                  localIps.map((ip) => '#${ip.visualId}').toSet().join(' '),
+                                  style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                       ],

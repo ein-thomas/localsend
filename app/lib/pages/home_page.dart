@@ -11,6 +11,7 @@ import 'package:localsend_app/pages/tabs/send_tab.dart';
 import 'package:localsend_app/pages/tabs/settings_tab.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
 import 'package:localsend_app/util/native/cross_file_converters.dart';
+import 'package:localsend_app/widget/drop_overlay.dart';
 import 'package:localsend_app/widget/responsive_builder.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -112,6 +113,8 @@ class _HomePageState extends State<HomePage> with Refena {
                     selectedIndex: vm.currentTab.index,
                     onDestinationSelected: (index) => vm.changeTab(HomeTab.values[index]),
                     extended: sizingInformation.isDesktop,
+                    // labels are already part of the destinations in the extended rail
+                    labelType: sizingInformation.isDesktop ? null : NavigationRailLabelType.all,
                     backgroundColor: Theme.of(context).cardColorWithElevation,
                     leading: sizingInformation.isDesktop
                         ? const Column(
@@ -147,21 +150,7 @@ class _HomePageState extends State<HomePage> with Refena {
                             SettingsTab(),
                           ],
                         ),
-                        if (_dragAndDropIndicator)
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.file_download, size: 128),
-                                const SizedBox(height: 30),
-                                Text(t.sendTab.placeItems, style: Theme.of(context).textTheme.titleLarge),
-                              ],
-                            ),
-                          ),
+                        if (_dragAndDropIndicator) const Positioned.fill(child: DropOverlay()),
                       ],
                     ),
                   ),

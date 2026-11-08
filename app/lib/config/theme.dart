@@ -8,7 +8,25 @@ import 'package:localsend_app/util/ui/dynamic_colors.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:yaru/yaru.dart' as yaru;
 
-final _borderRadius = BorderRadius.circular(5);
+final _borderRadius = BorderRadius.circular(10);
+
+/// Shared by the default and Yaru themes.
+/// The focused border uses the primary color so the active field is visible, especially for keyboard users.
+InputDecorationTheme _getInputDecorationTheme(ColorScheme colorScheme) {
+  final border = OutlineInputBorder(
+    borderSide: BorderSide(color: colorScheme.secondaryContainer),
+    borderRadius: _borderRadius,
+  );
+
+  return InputDecorationTheme(
+    filled: true,
+    fillColor: colorScheme.secondaryContainer,
+    border: border,
+    focusedBorder: border.copyWith(borderSide: BorderSide(color: colorScheme.primary, width: 2)),
+    enabledBorder: border,
+    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+  );
+}
 
 ThemeData getTheme(ColorMode colorMode, Color customColor, Brightness brightness, DynamicColors? dynamicColors) {
   if (colorMode == ColorMode.yaru) {
@@ -16,16 +34,6 @@ ThemeData getTheme(ColorMode colorMode, Color customColor, Brightness brightness
   }
 
   final colorScheme = _determineColorScheme(colorMode, customColor, brightness, dynamicColors);
-
-  final lightInputBorder = OutlineInputBorder(
-    borderSide: BorderSide(color: colorScheme.secondaryContainer),
-    borderRadius: _borderRadius,
-  );
-
-  final darkInputBorder = OutlineInputBorder(
-    borderSide: BorderSide(color: colorScheme.secondaryContainer),
-    borderRadius: _borderRadius,
-  );
 
   // https://github.com/localsend/localsend/issues/52
   final String? fontFamily;
@@ -59,13 +67,9 @@ ThemeData getTheme(ColorMode colorMode, Color customColor, Brightness brightness
             iconTheme: WidgetStateProperty.all(const IconThemeData(color: Colors.white)),
           )
         : null,
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: colorScheme.secondaryContainer,
-      border: colorScheme.brightness == Brightness.light ? lightInputBorder : darkInputBorder,
-      focusedBorder: colorScheme.brightness == Brightness.light ? lightInputBorder : darkInputBorder,
-      enabledBorder: colorScheme.brightness == Brightness.light ? lightInputBorder : darkInputBorder,
-      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+    inputDecorationTheme: _getInputDecorationTheme(colorScheme),
+    cardTheme: CardThemeData(
+      shape: RoundedRectangleBorder(borderRadius: _borderRadius),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -166,18 +170,6 @@ ThemeData _getYaruTheme(Brightness brightness) {
   final baseTheme = brightness == Brightness.light ? yaru.yaruLight : yaru.yaruDark;
   final colorScheme = baseTheme.colorScheme;
 
-  final lightInputBorder = OutlineInputBorder(
-    borderSide: BorderSide(color: colorScheme.secondaryContainer),
-    borderRadius: _borderRadius,
-  );
-
-  final darkInputBorder = OutlineInputBorder(
-    borderSide: BorderSide(color: colorScheme.secondaryContainer),
-    borderRadius: _borderRadius,
-  );
-
-  InputDecorationThemeData;
-
   return baseTheme.copyWith(
     // same density on all platforms so desktop matches mobile (defaults to compact on desktop)
     visualDensity: VisualDensity.standard,
@@ -186,14 +178,7 @@ ThemeData _getYaruTheme(Brightness brightness) {
             iconTheme: WidgetStateProperty.all(const IconThemeData(color: Colors.white)),
           )
         : null,
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: colorScheme.secondaryContainer,
-      border: colorScheme.brightness == Brightness.light ? lightInputBorder : darkInputBorder,
-      focusedBorder: colorScheme.brightness == Brightness.light ? lightInputBorder : darkInputBorder,
-      enabledBorder: colorScheme.brightness == Brightness.light ? lightInputBorder : darkInputBorder,
-      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-    ),
+    inputDecorationTheme: _getInputDecorationTheme(colorScheme),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         foregroundColor: colorScheme.brightness == Brightness.dark ? Colors.white : null,
